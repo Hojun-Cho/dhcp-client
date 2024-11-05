@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 #define elem(x) ((int)(sizeof(x)/sizeof(x[0])))
-#define IP(a,b,c,d) (u8[4]){a,b,c,d}
+#define IP(a,b,c,d) ((u8[4]){a,b,c,d})
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
 enum{
@@ -97,7 +97,7 @@ static u8 mask[IPv4addrlen];
 static u8 router[IPv4addrlen];
 static u8 dns[IPv4addrlen];
 static u64 xid;
-static u8 hostname[HOST_NAME_MAX + 1];
+static char hostname[HOST_NAME_MAX + 1];
 static u8 hwaddr[sizeof(struct sockaddr) + 1];
 static u8 cid[sizeof(struct sockaddr) + 1];
 static char *ifname;
@@ -159,7 +159,7 @@ static u8*
 optpput(u8 *p, int opt, u8 *v, int len)
 {
 	*p++ = opt;
-	*p++ == (u8)len;
+	*p++ = (u8)len;
 	memcpy(p, v, len);
 	return p + len;
 }
@@ -168,7 +168,7 @@ static u8*
 optput(u8 *p, int opt, u32 v, int len)
 {
 	*p++ = opt;
-	*p++ == (u8)len;
+	*p++ = (u8)len;
 	put(p, v, len);
 	return p + len;
 }
@@ -225,7 +225,7 @@ dhcpsend(int type, int how)
 	p = bp.optdata;
 	p = optput(p, ODtype, type, 1);
 	p = optpput(p, ODclientid, cid, sizeof(cid));
-	p = optpput(p, OBhostname, hostname, strlen(hostname));
+	p = optpput(p, OBhostname, (u8*)hostname, strlen(hostname));
 
 	switch(type){
 	case Discover:
